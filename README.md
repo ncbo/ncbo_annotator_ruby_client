@@ -5,7 +5,7 @@ The NCBO Annotator Gem is a Ruby client for NCBO's Annotator Web service. The NC
 ## Installation
 
     gem install libxml-ruby
-    gem install ncbo-annotator
+    gem install ncbo_annotator
 
 ## Usage
 
