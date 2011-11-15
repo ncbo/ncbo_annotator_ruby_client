@@ -7,6 +7,6 @@ Gem::Specification.new do |s|
   s.authors     = ["Paul R Alexander"]
   s.email       = 'support@bioontology.org'
   s.files       = Dir['lib/**/*.rb'] + ["lib/ncbo_annotator.rb"]
-  s.homepage    = 'http://rubygems.org/gems/ncbo_annotator'
+  s.homepage    = 'http://github.com/ncbo/ncbo_annotator'
   s.add_runtime_dependency 'libxml-ruby', '~> 1.1.4'
 end
