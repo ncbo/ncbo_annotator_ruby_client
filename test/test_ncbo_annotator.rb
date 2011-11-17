@@ -44,6 +44,29 @@ class TestAnnotator < Test::Unit::TestCase
     max = NCBO::Annotator.annotate("melanoma", :apikey => APIKEY, :levelMax => 1)
     assert no_max.annotations != max.annotations
   end
+  
+  def test_ontologies(ontologies = nil)
+    ontologies = NCBO::Annotator.ontologies(:apikey => APIKEY) if ontologies.nil?
+    assert ontologies.kind_of?(Array)
+    assert ontologies.length > 1
     
+    ncit_exists = false
+    ontologies.each do |ontology|
+      if ontology[:virtualOntologyId] == (1032)
+        ncit_exists = true
+        break
+      end
+    end
+    assert ncit_exists
+  end
+  
+  def test_ontologies_instantiation
+    annotator = NCBO::Annotator.new(:apikey => APIKEY)
+    annotator.annotate("melanoma")
+    test_ontologies(annotator.ontologies)
     
+    annotator.annotate("cancer")
+    test_ontologies(annotator.ontologies)
+  end
+
 end

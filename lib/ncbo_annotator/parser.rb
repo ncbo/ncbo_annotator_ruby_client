@@ -20,7 +20,6 @@ module NCBO
       def initialize(results)
         @root = "/success/data/annotatorResultBean"
         @results = parse_xml(results)
-        @result = AnnotatorResult.new
       end
       
       def self.parse_results(results)
@@ -28,11 +27,34 @@ module NCBO
       end
       
       def parse_results
+        @result = AnnotatorResult.new
         @result.id = @results.find_first(@root + "/resultID").content
         @result.statistics = parse_statistics
         @result.annotations = parse_annotations
         @result.ontologies = parse_ontologies
         @result
+      end
+      
+      def self.parse_included_ontologies(ontologies)
+        new(ontologies).parse_included_ontologies
+      end
+        
+      def parse_included_ontologies
+        @root = "/success/data/list"
+        ontologies = parse_ontologies("ontologyBean")
+        ontologies
+      end
+
+      private
+      
+      def parse_ontologies(ontology_location = "ontologies/ontologyUsedBean")
+        ontologies = []
+        @results.find(@root + "/#{ontology_location}").each do |ontology|
+          ont = {}
+          ontology.children.each {|child| ont[child.name.to_sym] = safe_to_i(child.content)}
+          ontologies << ont
+        end
+        ontologies
       end
       
       def parse_statistics
@@ -54,18 +76,6 @@ module NCBO
         end
         annotations
       end
-      
-      def parse_ontologies
-        ontologies = []
-        @results.find(@root + "/ontologies/ontologyUsedBean").each do |ontology|
-          ont = {}
-          ontology.children.each {|child| ont[child.name.to_sym] = safe_to_i(child.content)}
-          ontologies << ont
-        end
-        ontologies
-      end
-      
-      private
       
       def parse_concept(annotation, concept_location = "concept")
         a = {}
