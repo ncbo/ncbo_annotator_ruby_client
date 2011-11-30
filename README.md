@@ -19,15 +19,19 @@ You must always supply an NCBO API Key when using the annotator. To get an NCBO 
     result_melanoma = annotator.annotate("melanoma")
     result_cancer = annotator.annotate("cancer")
     
-### Getting a list of ontologies in use by the Annotator
+### Getting a list of ontologies available in the Annotator
 The NCBO Annotator uses a set of ontologies to annotate your text. To see the set currently in use, you can do the following:
 
     NCBO::Annotator.ontologies(:apikey => "your API Key")
     
+### Getting a list of UMLS Semantic Types available in the Annotator
+
+    NCBO::Annotator.semantic_types(:apikey => "your API Key")
+    
 ## Available Options
 The following default options are used with the NCBO Annotator Web service via the client.
 
-    annotator_location       = "http://rest.bioontology.org/obs/annotator"
+    annotator_location       = "http://rest.bioontology.org/obs"
     filterNumber             = true
     isStopWordsCaseSensitive = false
     isVirtualOntologyId      = true

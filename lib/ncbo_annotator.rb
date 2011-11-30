@@ -1,4 +1,3 @@
-require 'rubygems'
 require 'net/http'
 require 'xml'
 require 'uri'
@@ -60,6 +59,19 @@ module NCBO
         @ontologies = Parser::Annotator.parse_included_ontologies(ontologies_xml)
       else
         @ontologies
+      end
+    end
+    
+    def self.semantic_types(options)
+      new(options).semantic_types
+    end
+    
+    def semantic_types
+      if @semantic_types.nil?
+        semantic_types_xml = open("#{@options[:annotator_location]}/semanticTypes?apikey=#{@options[:apikey]}").read
+        @semantic_types = Parser::Annotator.parse_semantic_types(semantic_types_xml)
+      else
+        @semantic_types
       end
     end
     

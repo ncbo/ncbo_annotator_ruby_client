@@ -44,6 +44,21 @@ module NCBO
         ontologies = parse_ontologies("ontologyBean")
         ontologies
       end
+      
+      def self.parse_semantic_types(semantic_types)
+        new(semantic_types).parse_semantic_types
+      end
+      
+      def parse_semantic_types
+        @root = "/success/data/list"
+        semantic_types = []
+        @results.find(@root + "/semanticTypeBean").each do |semantic_type_bean|
+          semantic_type = {}
+          semantic_type_bean.children.each { |child| semantic_type[child.name.to_sym] = safe_to_i(child.content) }
+          semantic_types << semantic_type
+        end
+        semantic_types
+      end
 
       private
       
