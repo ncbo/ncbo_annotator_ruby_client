@@ -50,14 +50,7 @@ module NCBO
       end
       
       def parse_semantic_types
-        @root = "/success/data/list"
-        semantic_types = []
-        @results.find(@root + "/semanticTypeBean").each do |semantic_type_bean|
-          semantic_type = {}
-          semantic_type_bean.children.each { |child| semantic_type[child.name.to_sym] = safe_to_i(child.content) }
-          semantic_types << semantic_type
-        end
-        semantic_types
+        _parse_semantic_types(@results.find_first("/success/data/list"))
       end
 
       private
@@ -94,15 +87,27 @@ module NCBO
       
       def parse_concept(annotation, concept_location = "concept")
         a = {}
+
         annotation.find("#{concept_location}/*").each {|child| a[child.name.to_sym] = safe_to_i(child.content) if !child.first.nil? && !child.first.children?}
-        
         a[:synonyms] = annotation.find("#{concept_location}/synonyms/string").map {|syn| safe_to_i(syn.content)}
 
-        semantic_types = {}
-        annotation.find("#{concept_location}/semanticTypes/semanticTypeBean/*").each {|child| semantic_types[child.name.to_sym] = safe_to_i(child.content)}
+        semantic_types = []
+        semantic_types = _parse_semantic_types(annotation.find_first("#{concept_location}/semanticTypes"))
         a[:semantic_types] = semantic_types
-        
+
         a
+      end
+
+      def _parse_semantic_types(semantic_types_xml)
+        return Array.new if semantic_types_xml.nil?
+        
+        semantic_types = []
+        semantic_types_xml.each do |semantic_type_bean|
+          semantic_type = {}
+          semantic_type_bean.children.each { |child| semantic_type[child.name.to_sym] = safe_to_i(child.content) }
+          semantic_types << semantic_type
+        end
+        semantic_types
       end
       
       def parse_context(annotation)
@@ -112,9 +117,7 @@ module NCBO
         if a[:contextName].downcase.include?("mapping")
           a[:mappedConcept] = parse_concept(annotation.find_first("context"), "mappedConcept")
         elsif a[:contextName].downcase.include?("mgrep")
-          term = {}
-          annotation.find("context/term/*").each {|trm| term[trm.name.to_sym] = safe_to_i(trm.content)}
-          a[:term] = term
+          a[:term] = parse_concept(annotation.find_first("context/term/concept"))
         elsif a[:contextName].downcase.include?("closure")
           a[:concept] = parse_concept(annotation.find_first("context"))
         end

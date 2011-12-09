@@ -68,5 +68,10 @@ class TestAnnotator < Test::Unit::TestCase
     annotator.annotate("cancer")
     test_ontologies(annotator.ontologies)
   end
+  
+  def test_semantic_types
+    semantic_types = NCBO::Annotator.semantic_types(:apikey => APIKEY)
+    assert semantic_types.kind_of?(Array) && semantic_types.length > 1
+  end
 
 end

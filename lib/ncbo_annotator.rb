@@ -23,13 +23,16 @@ module NCBO
       @options[:scored] = true
       @options[:semanticTypes] = []
       @options[:stopWords] = []
-      @options[:wholeWordOnly] = true
+      @options[:wholeWordOnly] = false
       @options[:withDefaultStopWords] = false
       @options[:withSynonyms] = true
     
       @options.merge!(args)
       
       @ontologies = nil
+      
+      # Check to make sure mappingTypes are capitalized
+      fix_params
     
       raise ArgumentError, ":apikey is required, you can obtain one at http://bioportal.bioontology.org/accounts/new" if @options[:apikey].nil?
     end
@@ -42,6 +45,7 @@ module NCBO
     def annotate(text = nil, options = {})
       @options[:textToAnnotate] = text unless text.nil?
       @options.merge!(options) unless options.empty?
+      fix_params
       
       raise ArgumentError, ":textToAnnotate must be included" if @options[:textToAnnotate].nil?
       
@@ -81,16 +85,27 @@ module NCBO
 
     private
 
+    def fix_params
+      @options[:mappingTypes] = @options[:mappingTypes].split(",") if @options[:mappingTypes].kind_of?(String)
+      @options[:ontologiesToExpand] = @options[:ontologiesToExpand].split(",") if @options[:ontologiesToExpand].kind_of?(String)
+      @options[:ontologiesToKeepInResult] = @options[:ontologiesToKeepInResult].split(",") if @options[:ontologiesToKeepInResult].kind_of?(String)
+      @options[:semanticTypes] = @options[:semanticTypes].split(",") if @options[:semanticTypes].kind_of?(String)
+      @options[:stopWords] = @options[:stopWords].split(",") if @options[:stopWords].kind_of?(String)
+
+      @options[:mappingTypes].collect! {|e| e.capitalize} unless @options[:mappingTypes].nil?
+    end
+
     def annotate_post
       url = @options[:annotator_location] + "/annotator"
       options = @options.clone
+      options.delete_if {|k,v| v.kind_of?(Array) && v.empty?}
       options.each do |k,v|
         if v.kind_of?(Array)
           options[k] = v.join(",")
         end
       end
       res = Net::HTTP.post_form(URI.parse(url), options)
-      return res.body
+      res.body
     end
   end # end Annotator class
 end # end NCBO module
