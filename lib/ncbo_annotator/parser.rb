@@ -62,7 +62,7 @@ module NCBO
           ontology.children.each {|child| ont[child.name.to_sym] = safe_to_i(child.content)}
           ontologies << ont
         end
-        ontologies
+        ontologies.delete_if {|a| a[:status] != 28}
       end
       
       def parse_statistics
