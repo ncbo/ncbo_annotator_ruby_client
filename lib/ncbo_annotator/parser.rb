@@ -42,7 +42,7 @@ module NCBO
       def parse_included_ontologies
         @root = "/success/data/list"
         ontologies = parse_ontologies("ontologyBean")
-        ontologies
+        ontologies.delete_if {|a| a[:status] != 28}
       end
       
       def self.parse_semantic_types(semantic_types)
@@ -62,7 +62,7 @@ module NCBO
           ontology.children.each {|child| ont[child.name.to_sym] = safe_to_i(child.content)}
           ontologies << ont
         end
-        ontologies.delete_if {|a| a[:status] != 28}
+        ontologies
       end
       
       def parse_statistics
