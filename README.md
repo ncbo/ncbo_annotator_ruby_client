@@ -57,7 +57,9 @@ Default options may be overridden by providing them as follows:
 For more information on available option values, please see the NCBO Annotator [Web service documentation](http://www.bioontology.org/wiki/index.php/Annotator_User_Guide#Annotator_Web_Service_Parameters).
 
 ## Contact
-For questions please email [support@bioontology.org](support@bioontology.org).
+For questions please email [support@bioontology.org](mailto:support@bioontology.org).
+
+On Twitter: [@palexander](https://twitter.com/palexander), [@bioontology](https://twitter.com/bioontology)
 
 ## License (BSD two-clause)
 
